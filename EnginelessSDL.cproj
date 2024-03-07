@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <AssemblyName>EnginelessSDL</AssemblyName>
+    <PackageId>EnginelessSDL</PackageId>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>William Bodin</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <AssemblyTitle>EnginelessSDL</AssemblyTitle>
+    <Description>A simple ECS engine using rutnime reflection to provide systems with components.</Description>
+    <Copyright>MIT</Copyright>
+    <PackageDescription>A simple ECS engine using rutnime reflection to provide systems with components.</PackageDescription>
+    <RepositoryUrl>https://github.com/Rakarake/EnginelessSDL</RepositoryUrl>
+  </PropertyGroup>
+</Project>
