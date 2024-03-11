@@ -1,17 +1,25 @@
 using System;
 using Engineless;
-using System.Collections.Generic;
+using Engineless.Utils;
 using SDL2;
 
 namespace EnginelessSDL {
+    public class Sprite {
+        public Sprite(String path) {
+            this.path = path;
+        }
+        public String path;
+    }
+
     public static class EnginelessSDL {
 
-        class RenderState {
+        private class RenderState {
             public bool running = true;
             public nint renderer = 0;
             public nint window = 0;
         }
 
+        // TODO: free all textures
         static void Exit(IECS ecs, Res<RenderState> r) {
             var renderer = r.hit.renderer;
             var window = r.hit.window;
@@ -23,7 +31,7 @@ namespace EnginelessSDL {
             ecs.UnsetResource(typeof(RenderState));
         }
 
-        static void Render(IECS ecs, Res<RenderState> r) {
+        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform, Sprite)> q) {
             var running = r.hit.running;
             var renderer = r.hit.renderer;
 
@@ -44,11 +52,19 @@ namespace EnginelessSDL {
             // Clears the current render surface.
             SDL.SDL_RenderClear(renderer);
             
-            // Set the color to red before drawing our shape
-            SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            
-            // Draw a line from top left to bottom right
-            SDL.SDL_RenderDrawLine(renderer, 0, 0, 640, 480);
+            //// Set the color to red before drawing our shape
+            //SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+            //
+            //// Draw a line from top left to bottom right
+            //SDL.SDL_RenderDrawLine(renderer, 0, 0, 640, 480);
+
+            // Draw all sprites
+            foreach (var t in q.hits) {
+                var (transform, sprite) = t.Value;
+                Console.WriteLine("In the booty");
+                var texture = SDL2.SDL_image.IMG_Load(sprite.path);
+                SDL.SDL_RenderCopy(renderer, texture, IntPtr.Zero, IntPtr.Zero);
+            }
             
             // Switches out the currently presented render surface with the one we just did work on.
             SDL.SDL_RenderPresent(renderer);

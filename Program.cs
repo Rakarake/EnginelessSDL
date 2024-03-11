@@ -1,8 +1,16 @@
-using SDL2;
 using System;
+using System.Collections.Generic;
 using Engineless;
+using Engineless.Utils;
+using EnginelessSDL;
+
+// Load a texture
 
 Engine ecs = new();
+ecs.AddEntity(new List<Object>() {
+    new Transform() { position = (4, 4) },
+    new Sprite("splooty.png"),
+});
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
 ecs.Start();
 
