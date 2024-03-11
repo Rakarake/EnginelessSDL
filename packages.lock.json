@@ -7,6 +7,9 @@
         "requested": "[1.0.11, )",
         "resolved": "1.0.11",
         "contentHash": "K/guGaUyRdMhL2FLlUYbqJmKF3h2KtOV7l90NJfLOt/M64zLb4fkWlDGjXCZdHSZGPKsyOjps6FdsambXiLJQQ=="
+      },
+      "engineless": {
+        "type": "Project"
       }
     }
   }
