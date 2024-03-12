@@ -15,7 +15,6 @@ namespace EnginelessSDL {
     public static class EnginelessSDL {
 
         private class RenderState {
-            public bool running = true;
             public nint renderer = 0;
             public nint window = 0;
         }
@@ -50,7 +49,7 @@ namespace EnginelessSDL {
                 switch (e.type)
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
-                        r.hit.running = false;
+                        Exit(ecs, r);
                         break;
                 }
             }
@@ -77,7 +76,7 @@ namespace EnginelessSDL {
                 SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
                 SDL.SDL_Rect rect = new SDL.SDL_Rect()
                     {x = transform.position.Item1, y = transform.position.Item2,
-                    w = textureWidth * transform.scale.Item1, h = textureHeight * transform.scale.Item2};
+                    w = (int) (textureWidth * transform.scale.Item1), h = (int) (textureHeight * transform.scale.Item2)};
                 SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, ref rect);
             }
             
@@ -123,7 +122,7 @@ namespace EnginelessSDL {
                 Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
             }
 
-            ecs.SetResource(new RenderState() { running = true, renderer = renderer, window = window, });
+            ecs.SetResource(new RenderState() { renderer = renderer, window = window, });
             ecs.AddSystem(Event.Update, InitializeSprites);
             ecs.AddSystem(Event.Update, Render);
         }
