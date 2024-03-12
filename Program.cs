@@ -21,8 +21,16 @@ void ShrinkEverything(Query<Transform2D> q) {
 Engine ecs = new();
 ecs.AddEntity(new List<Object>() {
     new Transform2D() { position = (4, 4), scale = (1, 1) },
+    new Square(400, 400),
     new Sprite("splooty.png"),
 });
+
+ecs.AddEntity(new List<Object>() {
+    new Transform2D() { position = (4, 4), scale = (1, 1) },
+    new Square(400, 400),
+    new Color() { r = 80, g = 200, b = 150, a = 255 },
+});
+
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
 ecs.AddSystem(Event.Update, MoveAllSprites);
 ecs.AddSystem(Event.Update, ShrinkEverything);

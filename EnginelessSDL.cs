@@ -12,6 +12,14 @@ namespace EnginelessSDL {
         public nint texture = -1;
     }
 
+    public class Square {
+        public Square(int width, int height) {
+            size.Item1 = width;
+            size.Item2 = height;
+        }
+        public (int, int) size;
+    }
+
     public static class EnginelessSDL {
 
         private class RenderState {
@@ -40,7 +48,40 @@ namespace EnginelessSDL {
             }
         }
 
-        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
+        static void RenderSprites(Res<RenderState> s, Query<(Transform2D, Sprite)> q) {
+            // Draw all sprites
+            foreach (var t in q.hits) {
+                var (transform, sprite) = t.Value;
+                int textureWidth;
+                int textureHeight;
+                uint format;
+                int access;
+                SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
+                SDL.SDL_Rect rect = new SDL.SDL_Rect()
+                    {x = transform.position.Item1, y = transform.position.Item2,
+                    w = (int) (textureWidth * transform.scale.Item1), h = (int) (textureHeight * transform.scale.Item2)};
+                SDL.SDL_RenderCopy(s.hit.renderer, sprite.texture, IntPtr.Zero, ref rect);
+            }
+        }
+
+        static void RenderSquares(Res<RenderState> s, Query<(Transform2D, Square, Color)> q) {
+            foreach (var t in q.hits) {
+                var rect = new SDL.SDL_Rect { 
+                    x = t.Value.Item1.position.Item1,
+                    y = t.Value.Item1.position.Item2,
+                    w = (int) (t.Value.Item1.scale.Item1 * t.Value.Item2.size.Item1),
+                    h = (int) (t.Value.Item1.scale.Item2 * t.Value.Item2.size.Item2),
+                };
+
+                SDL.SDL_SetRenderDrawColor
+                    (s.hit.renderer, t.Value.Item3.r, t.Value.Item3.g,t.Value.Item3.b, t.Value.Item3.a);
+                
+                // Draw a filled in rectangle.
+                SDL.SDL_RenderFillRect(s.hit.renderer, ref rect);
+            }
+        }
+
+        static void PreRender(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
             var renderer = r.hit.renderer;
 
             // Check to see if there are any events and continue to do so until the queue is empty.
@@ -59,29 +100,17 @@ namespace EnginelessSDL {
             
             // Clears the current render surface.
             SDL.SDL_RenderClear(renderer);
-            
+        }
+
+        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
             //// Set the color to red before drawing our shape
             //SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             //
             //// Draw a line from top left to bottom right
             //SDL.SDL_RenderDrawLine(renderer, 0, 0, 640, 480);
 
-            // Draw all sprites
-            foreach (var t in q.hits) {
-                var (transform, sprite) = t.Value;
-                int textureWidth;
-                int textureHeight;
-                uint format;
-                int access;
-                SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
-                SDL.SDL_Rect rect = new SDL.SDL_Rect()
-                    {x = transform.position.Item1, y = transform.position.Item2,
-                    w = (int) (textureWidth * transform.scale.Item1), h = (int) (textureHeight * transform.scale.Item2)};
-                SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, ref rect);
-            }
-            
             // Switches out the currently presented render surface with the one we just did work on.
-            SDL.SDL_RenderPresent(renderer);
+            SDL.SDL_RenderPresent(r.hit.renderer);
         }
 
         public static void Initialize(IECS ecs) {
@@ -124,6 +153,9 @@ namespace EnginelessSDL {
 
             ecs.SetResource(new RenderState() { renderer = renderer, window = window, });
             ecs.AddSystem(Event.Update, InitializeSprites);
+            ecs.AddSystem(Event.Update, PreRender);
+            ecs.AddSystem(Event.Update, RenderSprites);
+            ecs.AddSystem(Event.Update, RenderSquares);
             ecs.AddSystem(Event.Update, Render);
         }
     }
