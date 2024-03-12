@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using Engineless;
 using Engineless.Utils;
 using EnginelessSDL;
+using SDL2;
 
 // Load a texture
+
+//SDL.SDL_Init(SDL.);
 
 Engine ecs = new();
 ecs.AddEntity(new List<Object>() {

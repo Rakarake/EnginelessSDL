@@ -9,6 +9,7 @@ namespace EnginelessSDL {
             this.path = path;
         }
         public String path;
+        public nint texture = -1;
     }
 
     public static class EnginelessSDL {
@@ -29,6 +30,15 @@ namespace EnginelessSDL {
             SDL.SDL_DestroyWindow(window);
             SDL.SDL_Quit();
             ecs.UnsetResource(typeof(RenderState));
+        }
+
+        // Initialize sprites before rendering if they are not already
+        static void InitializeSprites(Query<Sprite> q, Res<RenderState> r) {
+            foreach (var s in q.hits) {
+                if (s.Value.texture == -1) {
+                    s.Value.texture = SDL2.SDL_image.IMG_LoadTexture(r.hit.renderer, s.Value.path);
+                }
+            }
         }
 
         static void Render(IECS ecs, Res<RenderState> r, Query<(Transform, Sprite)> q) {
@@ -61,9 +71,10 @@ namespace EnginelessSDL {
             // Draw all sprites
             foreach (var t in q.hits) {
                 var (transform, sprite) = t.Value;
-                Console.WriteLine("In the booty");
-                var texture = SDL2.SDL_image.IMG_Load(sprite.path);
-                SDL.SDL_RenderCopy(renderer, texture, IntPtr.Zero, IntPtr.Zero);
+                Console.WriteLine("About to draw");
+                SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, IntPtr.Zero);
+                Console.WriteLine("Texture id: " + sprite.texture);
+                Console.WriteLine("ERROR? " + SDL_image.IMG_GetError());
             }
             
             // Switches out the currently presented render surface with the one we just did work on.
@@ -78,7 +89,7 @@ namespace EnginelessSDL {
             }
             
             // Create a new window given a title, size, and passes it a flag indicating it should be shown.
-            var window = SDL.SDL_CreateWindow("SDL .NET 6 Tutorial",
+            var window = SDL.SDL_CreateWindow("Engineless",
                     SDL.SDL_WINDOWPOS_UNDEFINED,
                     SDL.SDL_WINDOWPOS_UNDEFINED,
                     640,
@@ -109,6 +120,7 @@ namespace EnginelessSDL {
             }
 
             ecs.SetResource(new RenderState() { running = true, renderer = renderer, window = window, });
+            ecs.AddSystem(Event.Update, InitializeSprites);
             ecs.AddSystem(Event.Update, Render);
         }
     }
