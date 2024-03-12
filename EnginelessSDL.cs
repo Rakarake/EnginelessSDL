@@ -70,7 +70,14 @@ namespace EnginelessSDL {
             // Draw all sprites
             foreach (var t in q.hits) {
                 var (transform, sprite) = t.Value;
-                SDL.SDL_Rect rect = new SDL.SDL_Rect() {x = transform.position.Item1, y = transform.position.Item2, w = 300, h = 300};
+                int textureWidth;
+                int textureHeight;
+                uint format;
+                int access;
+                SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
+                SDL.SDL_Rect rect = new SDL.SDL_Rect()
+                    {x = transform.position.Item1, y = transform.position.Item2,
+                    w = textureWidth * transform.scale.Item1, h = textureHeight * transform.scale.Item2};
                 SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, ref rect);
             }
             

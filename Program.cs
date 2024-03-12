@@ -7,14 +7,20 @@ using SDL2;
 
 // Load a texture
 
-//SDL.SDL_Init(SDL.);
+void MoveAllSprites(Query<(Transform2D, Sprite)> q) {
+    foreach (var h in q.hits) {
+        h.Value.Item1.position.Item1 += 1;
+        h.Value.Item1.position.Item2 += 1;
+    }
+}
 
 Engine ecs = new();
 ecs.AddEntity(new List<Object>() {
-    new Transform2D() { position = (4, 4) },
+    new Transform2D() { position = (4, 4), scale = (1, 1) },
     new Sprite("splooty.png"),
 });
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
+ecs.AddSystem(Event.Update, MoveAllSprites);
 ecs.Start();
 
 //// Initilizes SDL.
