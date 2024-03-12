@@ -37,6 +37,7 @@ namespace EnginelessSDL {
             SDL.SDL_DestroyWindow(window);
             SDL.SDL_Quit();
             ecs.UnsetResource(typeof(RenderState));
+            System.Environment.Exit(0);
         }
 
         // Initialize sprites before rendering if they are not already
