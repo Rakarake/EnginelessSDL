@@ -41,8 +41,7 @@ namespace EnginelessSDL {
             }
         }
 
-        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform, Sprite)> q) {
-            var running = r.hit.running;
+        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
             var renderer = r.hit.renderer;
 
             // Check to see if there are any events and continue to do so until the queue is empty.
@@ -51,7 +50,7 @@ namespace EnginelessSDL {
                 switch (e.type)
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
-                        running = false;
+                        r.hit.running = false;
                         break;
                 }
             }
@@ -71,10 +70,8 @@ namespace EnginelessSDL {
             // Draw all sprites
             foreach (var t in q.hits) {
                 var (transform, sprite) = t.Value;
-                Console.WriteLine("About to draw");
-                SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, IntPtr.Zero);
-                Console.WriteLine("Texture id: " + sprite.texture);
-                Console.WriteLine("ERROR? " + SDL_image.IMG_GetError());
+                SDL.SDL_Rect rect = new SDL.SDL_Rect() {x = transform.position.Item1, y = transform.position.Item2, w = 300, h = 300};
+                SDL.SDL_RenderCopy(renderer, sprite.texture, IntPtr.Zero, ref rect);
             }
             
             // Switches out the currently presented render surface with the one we just did work on.

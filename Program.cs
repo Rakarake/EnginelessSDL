@@ -11,7 +11,7 @@ using SDL2;
 
 Engine ecs = new();
 ecs.AddEntity(new List<Object>() {
-    new Transform() { position = (4, 4) },
+    new Transform2D() { position = (4, 4) },
     new Sprite("splooty.png"),
 });
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
