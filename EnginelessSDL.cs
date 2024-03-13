@@ -59,8 +59,8 @@ namespace EnginelessSDL {
                 int access;
                 SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
                 SDL.SDL_Rect rect = new SDL.SDL_Rect()
-                    {x = transform.position.Item1, y = transform.position.Item2,
-                    w = (int) (textureWidth * transform.scale.Item1), h = (int) (textureHeight * transform.scale.Item2)};
+                    {x = (int) transform.x, y = (int) transform.y,
+                    w = (int) (textureWidth * transform.scaleX), h = (int) (textureHeight * transform.scaleY)};
                 SDL.SDL_RenderCopy(s.hit.renderer, sprite.texture, IntPtr.Zero, ref rect);
             }
         }
@@ -68,10 +68,10 @@ namespace EnginelessSDL {
         static void RenderSquares(Res<RenderState> s, Query<(Transform2D, Square, Color)> q) {
             foreach (var t in q.hits) {
                 var rect = new SDL.SDL_Rect { 
-                    x = t.Value.Item1.position.Item1,
-                    y = t.Value.Item1.position.Item2,
-                    w = (int) (t.Value.Item1.scale.Item1 * t.Value.Item2.size.Item1),
-                    h = (int) (t.Value.Item1.scale.Item2 * t.Value.Item2.size.Item2),
+                    x = (int) t.Value.Item1.x,
+                    y = (int) t.Value.Item1.y,
+                    w = (int) (t.Value.Item1.scaleX * t.Value.Item2.size.Item1),
+                    h = (int) (t.Value.Item1.scaleX * t.Value.Item2.size.Item2),
                 };
 
                 SDL.SDL_SetRenderDrawColor
