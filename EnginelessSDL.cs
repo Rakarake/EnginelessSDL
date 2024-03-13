@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Engineless;
 using Engineless.Utils;
 using SDL2;
@@ -18,6 +19,13 @@ namespace EnginelessSDL {
             size.Item2 = height;
         }
         public (int, int) size;
+    }
+
+    // The delta time between frames
+    public class Time {
+        public double delta = 1/60;
+        // Used to get the delta
+        public Stopwatch stopwatch;
     }
 
     public static class EnginelessSDL {
@@ -103,7 +111,7 @@ namespace EnginelessSDL {
             SDL.SDL_RenderClear(renderer);
         }
 
-        static void Render(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
+        static void Render(IECS ecs, Res<RenderState> r, Res<Time> time, Query<(Transform2D, Sprite)> q) {
             //// Set the color to red before drawing our shape
             //SDL.SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
             //
@@ -112,6 +120,10 @@ namespace EnginelessSDL {
 
             // Switches out the currently presented render surface with the one we just did work on.
             SDL.SDL_RenderPresent(r.hit.renderer);
+            time.hit.stopwatch.Stop();
+            Console.WriteLine("Stopwatch elapsed: " + time.hit.stopwatch.Elapsed.Milliseconds);
+            time.hit.delta = (double) time.hit.stopwatch.Elapsed.Milliseconds / 1000;
+            time.hit.stopwatch.Restart();
         }
 
         public static void Initialize(IECS ecs) {
@@ -153,6 +165,7 @@ namespace EnginelessSDL {
             }
 
             ecs.SetResource(new RenderState() { renderer = renderer, window = window, });
+            ecs.SetResource(new Time() { stopwatch = new() });
             ecs.AddSystem(Event.Update, InitializeSprites);
             ecs.AddSystem(Event.Update, PreRender);
             ecs.AddSystem(Event.Update, RenderSprites);

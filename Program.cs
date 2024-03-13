@@ -4,17 +4,17 @@ using Engineless;
 using Engineless.Utils;
 using EnginelessSDL;
 
-void MoveAllSprites(Query<(Transform2D, Sprite)> q) {
+void MoveAllSprites(Res<Time> t, Query<(Transform2D, Sprite)> q) {
     foreach (var h in q.hits) {
-        h.Value.Item1.x += 1;
-        h.Value.Item1.y += 1;
+        h.Value.Item1.x += t.hit.delta;
+        h.Value.Item1.y += t.hit.delta;
     }
 }
 
-void ShrinkEverything(Query<Transform2D> q) {
+void ShrinkEverything(Res<Time> t, Query<Transform2D> q) {
     foreach (var h in q.hits) {
-        h.Value.scaleX -= 0.005;
-        h.Value.scaleY -= 0.005;
+        h.Value.scaleX -= 0.5 * t.hit.delta;
+        h.Value.scaleY -= 0.5 * t.hit.delta;
     }
 }
 
@@ -32,7 +32,7 @@ ecs.AddEntity(new List<Object>() {
 });
 
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
-ecs.AddSystem(Event.Update, MoveAllSprites);
+//ecs.AddSystem(Event.Update, MoveAllSprites);
 ecs.AddSystem(Event.Update, ShrinkEverything);
 ecs.Start();
 
