@@ -15,10 +15,11 @@ namespace EnginelessSDL {
 
     public class Square {
         public Square(int width, int height) {
-            size.Item1 = width;
-            size.Item2 = height;
+            this.width = width;
+            this.height = height;
         }
-        public (int, int) size;
+        public double width;
+        public double height;
     }
 
     // The delta time between frames
@@ -65,7 +66,7 @@ namespace EnginelessSDL {
                 int textureHeight;
                 uint format;
                 int access;
-                SDL.SDL_QueryTexture(t.Value.Item2.texture, out format, out access, out textureWidth, out textureHeight);
+                SDL.SDL_QueryTexture(sprite.texture, out format, out access, out textureWidth, out textureHeight);
                 SDL.SDL_Rect rect = new SDL.SDL_Rect()
                     {x = (int) transform.x, y = (int) transform.y,
                     w = (int) (textureWidth * transform.scaleX), h = (int) (textureHeight * transform.scaleY)};
@@ -75,15 +76,16 @@ namespace EnginelessSDL {
 
         static void RenderSquares(Res<RenderState> s, Query<(Transform2D, Square, Color)> q) {
             foreach (var t in q.hits) {
-                var rect = new SDL.SDL_Rect { 
-                    x = (int) t.Value.Item1.x,
-                    y = (int) t.Value.Item1.y,
-                    w = (int) (t.Value.Item1.scaleX * t.Value.Item2.size.Item1),
-                    h = (int) (t.Value.Item1.scaleX * t.Value.Item2.size.Item2),
+                var (transform, square, color) = t.Value;
+                var rect = new SDL.SDL_Rect {
+                    x = (int) (transform.x + (transform.scaleX * square.width / 2)),
+                    y = (int) (transform.y + (transform.scaleY * square.height / 2)),
+                    w = (int) (transform.scaleX * square.width),
+                    h = (int) (transform.scaleY * square.height),
                 };
 
                 SDL.SDL_SetRenderDrawColor
-                    (s.hit.renderer, t.Value.Item3.r, t.Value.Item3.g,t.Value.Item3.b, t.Value.Item3.a);
+                    (s.hit.renderer, color.r, color.g, color.b, color.a);
                 
                 // Draw a filled in rectangle.
                 SDL.SDL_RenderFillRect(s.hit.renderer, ref rect);
@@ -164,8 +166,11 @@ namespace EnginelessSDL {
                 Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
             }
 
+            Stopwatch stopwatch = new();
+            stopwatch.Start();
+
             ecs.SetResource(new RenderState() { renderer = renderer, window = window, });
-            ecs.SetResource(new Time() { stopwatch = new() });
+            ecs.SetResource(new Time() { stopwatch = stopwatch });
             ecs.AddSystem(Event.Update, InitializeSprites);
             ecs.AddSystem(Event.Update, PreRender);
             ecs.AddSystem(Event.Update, RenderSprites);
