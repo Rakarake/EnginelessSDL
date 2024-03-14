@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Engineless;
 using Engineless.Utils;
 using EnginelessSDL;
@@ -15,6 +16,26 @@ void ShrinkEverything(Res<Time> t, Query<Transform2D> q) {
     foreach (var h in q.hits) {
         h.Value.scaleX -= 0.05 * t.hit.delta;
         h.Value.scaleY -= 0.05 * t.hit.delta;
+    }
+}
+
+void PlayerMovement(Res<Time> time, Res<Input> i, Query<Transform2D> q) {
+    var delta = time.hit.delta;
+    foreach (var t in q.hits) {
+        foreach (var k in i.hit.keysPressed) {
+            if (k == Key.UP) {
+                t.Value.y -= delta * 300;
+            }
+            if (k == Key.DOWN) {
+                t.Value.y += delta * 300;
+            }
+            if (k == Key.LEFT) {
+                t.Value.x -= delta * 300;
+            }
+            if (k == Key.RIGHT) {
+                t.Value.x += delta * 300;
+            }
+        }
     }
 }
 
@@ -34,5 +55,6 @@ ecs.AddEntity(new List<Object>() {
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
 //ecs.AddSystem(Event.Update, MoveAllSprites);
 ecs.AddSystem(Event.Update, ShrinkEverything);
+ecs.AddSystem(Event.Update, PlayerMovement);
 ecs.Start();
 

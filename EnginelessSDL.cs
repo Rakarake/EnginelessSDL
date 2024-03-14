@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Engineless;
 using Engineless.Utils;
@@ -26,7 +27,22 @@ namespace EnginelessSDL {
     public class Time {
         public double delta = 1/60;
         // Used to get the delta
-        public Stopwatch stopwatch;
+        public Stopwatch stopwatch = new();
+    }
+
+    // Uses string representations
+    public class Input {
+        public HashSet<Key> keysPressed = new();
+    }
+
+    // Only these keys atm
+    public enum Key {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT,
+        X,
+        NONE,
     }
 
     public static class EnginelessSDL {
@@ -93,7 +109,29 @@ namespace EnginelessSDL {
             }
         }
 
-        static void PreRender(IECS ecs, Res<RenderState> r, Query<(Transform2D, Sprite)> q) {
+        static private Key ConvertKeyboardInput(SDL.SDL_Keycode input) {
+            Key k;
+            if (input == SDL.SDL_Keycode.SDLK_LEFT) {
+                k = Key.LEFT;
+            }
+            else if (input == SDL.SDL_Keycode.SDLK_RIGHT) {
+                k = Key.RIGHT;
+            }
+            else if (input == SDL.SDL_Keycode.SDLK_UP) {
+                k = Key.UP;
+            }
+            else if (input == SDL.SDL_Keycode.SDLK_DOWN) {
+                k = Key.DOWN;
+            }
+            else if (input == SDL.SDL_Keycode.SDLK_x) {
+                k = Key.X;
+            }
+            else
+                k = Key.NONE;
+            return k;
+        }
+
+        static void PreRender(IECS ecs, Res<RenderState> r, Res<Input> i, Query<(Transform2D, Sprite)> q) {
             var renderer = r.hit.renderer;
 
             // Check to see if there are any events and continue to do so until the queue is empty.
@@ -103,6 +141,18 @@ namespace EnginelessSDL {
                 {
                     case SDL.SDL_EventType.SDL_QUIT:
                         Exit(ecs, r);
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYDOWN:
+                        var k = ConvertKeyboardInput(e.key.keysym.sym);
+                        if (k != Key.NONE) {
+                            i.hit.keysPressed.Add(k);
+                        }
+                        break;
+                    case SDL.SDL_EventType.SDL_KEYUP:
+                        var k2 = ConvertKeyboardInput(e.key.keysym.sym);
+                        if (k2 != Key.NONE) {
+                            i.hit.keysPressed.Remove(k2);
+                        }
                         break;
                 }
             }
@@ -124,7 +174,6 @@ namespace EnginelessSDL {
             // Switches out the currently presented render surface with the one we just did work on.
             SDL.SDL_RenderPresent(r.hit.renderer);
             time.hit.stopwatch.Stop();
-            Console.WriteLine("Stopwatch elapsed: " + time.hit.stopwatch.Elapsed.Milliseconds);
             time.hit.delta = (double) time.hit.stopwatch.Elapsed.Milliseconds / 1000;
             time.hit.stopwatch.Restart();
         }
@@ -171,7 +220,8 @@ namespace EnginelessSDL {
             stopwatch.Start();
 
             ecs.SetResource(new RenderState() { renderer = renderer, window = window, });
-            ecs.SetResource(new Time() { stopwatch = stopwatch });
+            ecs.SetResource(new Time());
+            ecs.SetResource(new Input());
             ecs.AddSystem(Event.Update, InitializeSprites);
             ecs.AddSystem(Event.Update, PreRender);
             ecs.AddSystem(Event.Update, RenderSprites);
