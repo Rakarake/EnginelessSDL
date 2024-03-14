@@ -183,40 +183,34 @@ namespace EnginelessSDL {
         }
 
         public static void Initialize(Res<SDLState> sdlState, IECS ecs) {
-            // Initilizes SDL.
-            if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0)
-            {
+            // Big initialize
+            if (SDL.SDL_Init(SDL.SDL_INIT_VIDEO) < 0) {
                 Console.WriteLine($"There was an issue initilizing SDL. {SDL.SDL_GetError()}");
             }
-            
-            // Create a new window given a title, size, and passes it a flag indicating it should be shown.
+
             var window = SDL.SDL_CreateWindow("Engineless",
-                    SDL.SDL_WINDOWPOS_UNDEFINED,
-                    SDL.SDL_WINDOWPOS_UNDEFINED,
-                    sdlState.hit.windowWidth,
-                    sdlState.hit.windowHeight,
-                    SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN
+                SDL.SDL_WINDOWPOS_UNDEFINED,
+                SDL.SDL_WINDOWPOS_UNDEFINED,
+                sdlState.hit.windowWidth,
+                sdlState.hit.windowHeight,
+                SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN
             );
-            
-            if (window == IntPtr.Zero)
-            {
+            if (window == IntPtr.Zero) {
                 Console.WriteLine($"There was an issue creating the window. {SDL.SDL_GetError()}");
             }
-            
-            // Creates a new SDL hardware renderer using the default graphics device with VSYNC enabled.
-            var renderer = SDL.SDL_CreateRenderer(window, 
-                                                    -1, 
-                                                    SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | 
-                                                    SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC);
-            
-            if (renderer == IntPtr.Zero)
-            {
+
+            var renderer = SDL.SDL_CreateRenderer(
+                window, 
+                -1, 
+                SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED | 
+                SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC
+            );
+            if (renderer == IntPtr.Zero) {
                 Console.WriteLine($"There was an issue creating the renderer. {SDL.SDL_GetError()}");
             }
-            
-            // Initilizes SDL_image for use with png files.
-            if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0)
-            {
+
+            // Initialize SDL_image
+            if (SDL_image.IMG_Init(SDL_image.IMG_InitFlags.IMG_INIT_PNG) == 0) {
                 Console.WriteLine($"There was an issue initilizing SDL2_Image {SDL_image.IMG_GetError()}");
             }
 
