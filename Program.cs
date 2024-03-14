@@ -13,8 +13,8 @@ void MoveAllSprites(Res<Time> t, Query<(Transform2D, Sprite)> q) {
 
 void ShrinkEverything(Res<Time> t, Query<Transform2D> q) {
     foreach (var h in q.hits) {
-        h.Value.scaleX -= 0.5 * t.hit.delta;
-        h.Value.scaleY -= 0.5 * t.hit.delta;
+        h.Value.scaleX -= 0.05 * t.hit.delta;
+        h.Value.scaleY -= 0.05 * t.hit.delta;
     }
 }
 

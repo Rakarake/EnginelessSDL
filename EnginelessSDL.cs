@@ -68,7 +68,8 @@ namespace EnginelessSDL {
                 int access;
                 SDL.SDL_QueryTexture(sprite.texture, out format, out access, out textureWidth, out textureHeight);
                 SDL.SDL_Rect rect = new SDL.SDL_Rect()
-                    {x = (int) transform.x, y = (int) transform.y,
+                    {x = (int) (transform.x + (textureWidth/2) - (transform.scaleX * textureWidth/2)),
+                        y = (int) (transform.y + (textureHeight/2) - (transform.scaleY * textureHeight/2)),
                     w = (int) (textureWidth * transform.scaleX), h = (int) (textureHeight * transform.scaleY)};
                 SDL.SDL_RenderCopy(s.hit.renderer, sprite.texture, IntPtr.Zero, ref rect);
             }
@@ -78,8 +79,8 @@ namespace EnginelessSDL {
             foreach (var t in q.hits) {
                 var (transform, square, color) = t.Value;
                 var rect = new SDL.SDL_Rect {
-                    x = (int) (transform.x + (transform.scaleX * square.width / 2)),
-                    y = (int) (transform.y + (transform.scaleY * square.height / 2)),
+                    x = (int) (transform.x + (square.width/2) - (transform.scaleX * square.width / 2)),
+                    y = (int) (transform.y + (square.width/2) - (transform.scaleY * square.height / 2)),
                     w = (int) (transform.scaleX * square.width),
                     h = (int) (transform.scaleY * square.height),
                 };
