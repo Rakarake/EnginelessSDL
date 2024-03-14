@@ -52,6 +52,7 @@ ecs.AddEntity(new List<Object>() {
     new Color() { r = 80, g = 200, b = 150, a = 255 },
 });
 
+ecs.SetResource(new SDLState() { windowWidth = 1200, windowHeight = 800, });
 ecs.AddSystem(Event.Startup, EnginelessSDL.EnginelessSDL.Initialize);
 //ecs.AddSystem(Event.Update, MoveAllSprites);
 ecs.AddSystem(Event.Update, ShrinkEverything);
