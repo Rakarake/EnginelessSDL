@@ -17,20 +17,24 @@ void PlayerMovement(Res<Time> time, Res<Input> i, Query<(Transform2D, Player)> q
     foreach (var t in q.hits) {
         foreach (var k in i.hit.keysPressed) {
             if (k == Key.UP) {
-                t.Value.Item1.y -= delta * 300;
+                //t.Value.Item1.y -= delta * 300;
             }
             if (k == Key.DOWN) {
-                t.Value.Item1.y += delta * 300;
+                //t.Value.Item1.y += delta * 300;
             }
             if (k == Key.LEFT) {
-                t.Value.Item1.x -= delta * 300;
-                t.Value.Item1.rotation -= delta;
+                //t.Value.Item1.x -= delta * 300;
+                t.Value.Item1.rotation -= delta * 4;
             }
             if (k == Key.RIGHT) {
-                t.Value.Item1.x += delta * 300;
-                t.Value.Item1.rotation += delta;
+                //t.Value.Item1.x += delta * 300;
+                t.Value.Item1.rotation += delta * 4;
             }
         }
+
+        // Move the player
+        t.Value.Item1.x += System.Math.Sin(t.Value.Item1.rotation) * delta * 300;
+        t.Value.Item1.y += System.Math.Cos(t.Value.Item1.rotation) * delta * 300;
     }
 }
 
